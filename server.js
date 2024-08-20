@@ -2,10 +2,10 @@
 const express = require('express');
 const connectDB = require('./models/BD.js');
 const Contract = require('./models/Contrato.js');
-const nuevaONG = require('./models/ONG.js');
+const ONG = require('./models/ONG.js');
 const cors = require('cors');
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 const contrato=require("./Contrato2.js")
 const Donador= require("./models/Donador.js")
 const User= require("./models/user.js")
@@ -120,7 +120,7 @@ app.post('/api/crearContrato', async (req, res) => {
     const { name, description, owner } = req.body;
     try {
         // Desplegar el contrato
-        await contrato.CrearContrato(name, description, owner);
+        await deployContract(name, description, owner);
         res.status(201).json({ message: 'Contrato desplegado y guardado con éxito' });
     } catch (error) {
         console.error('Error al desplegar y guardar el contrato:', error);
