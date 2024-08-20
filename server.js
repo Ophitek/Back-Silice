@@ -10,7 +10,6 @@ const contrato=require("./Contrato2.js")
 const Donador= require("./models/Donador.js")
 const User= require("./models/user.js")
 const {deployContract} = require('./Contrato2.js')
-
 connectDB();
 
 app.use(cors());
