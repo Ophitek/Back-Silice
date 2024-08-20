@@ -91,7 +91,8 @@ app.post('/donadores/register', async (req, res) => {
             userType = 'ONG';
             userName = ong.organization; // Suponiendo que tienes un campo 'organization' en tu modelo
             userLastName = ong.email; // Suponiendo que tienes un campo 'email' en tu modelo
-        }
+            description= ong.description
+          }
 
         // Construir el mensaje
         const message = `Usuario encontrado como Nombre: ${userName} Apellido: ${userLastName}`;
@@ -102,7 +103,8 @@ app.post('/donadores/register', async (req, res) => {
             userType: userType,
             name: userName,
             lastName: userLastName,
-            email: email
+            email: email,
+            description: description
         }, SECRET_KEY, { expiresIn: '1h' }); // Expiración en 1 hora
     
         // Responder con el token y el mensaje
