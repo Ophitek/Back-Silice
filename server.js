@@ -104,7 +104,7 @@ app.post('/donadores/register', async (req, res) => {
             name: userName,
             lastName: userLastName,
             email: email,
-            description: description
+            description: donador ? null : ong.description 
         }, SECRET_KEY, { expiresIn: '1h' }); // Expiración en 1 hora
     
         // Responder con el token y el mensaje
