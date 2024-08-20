@@ -1,3 +1,4 @@
+// Contrato2.js
 const {
     Client,
     PrivateKey,
@@ -56,10 +57,11 @@ async function deployContract(name, description, owner) {
     // Guardar el contrato en la base de datos
     await saveContract(name, contractId.toString(), description, owner);
 }
-//FUNCION PARA GUARDAR CONTRATOS        
+
+// FUNCION PARA GUARDAR CONTRATOS        
 async function saveContract(name, contractAddress, description, owner) {
     try {
-        const response = await axios.post('http://localhost:5000/api/contracts', {
+        const response = await axios.post('http://localhost:8080/api/contracts', {
             name,
             contractAddress,
             description,
@@ -71,5 +73,5 @@ async function saveContract(name, contractAddress, description, owner) {
     }
 }
 
-deployContract().catch(console.error);
-module.exports= { "CrearContrato" : deployContract}
+// Exportar la función para que pueda ser usada en otros archivos
+module.exports = { deployContract };
