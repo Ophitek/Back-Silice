@@ -13,7 +13,7 @@ const {deployContract} = require('./Contrato2.js')
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = 'nan_alan_ponce_cris_pao'; 
 const { contractBalanceCheckerFcn } = require('./Bcontract.js'); // Ajusta la ruta según corresponda
-
+const {hbarTransferFcn} =require("./Enviar.js")
 
 
 connectDB();
@@ -116,6 +116,24 @@ app.post('/donadores/register', async (req, res) => {
     } catch (error) {
         console.error('Error al iniciar sesión:', error);
         res.status(500).json({ message: 'Error al iniciar sesión' });
+    }
+});
+
+//Enviar
+app.post('/api/donate', async (req, res) => {
+    const { sender, idContract, amount, privateKey } = req.body;
+    console.log("Recibo idPublica ", sender, "idContrato: ", idContract, "amount ", amount, "PK ", privateKey );
+    
+
+    try {
+        // Utiliza la función hbarTransferFcn para realizar la transferencia
+        const transferRx = await hbarTransferFcn(sender, idContract, amount,privateKey);
+        console.log(`\n- Transfer contract: ${transferRx.status}`);
+        // Envía la respuesta de la transacción
+        res.status(200).json({ message: 'Transferencia realizada con éxito', status: transferRx.status });
+    } catch (error) {
+        console.error('Error al realizar la transferencia:', error);
+        res.status(500).send('Error al realizar la transferencia');
     }
 });
 
