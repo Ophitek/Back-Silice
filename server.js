@@ -106,7 +106,7 @@ app.post('/donadores/register', async (req, res) => {
         }, SECRET_KEY, { expiresIn: '1h' }); // Expiración en 1 hora
     
         // Responder con el token y el mensaje
-        res.status(200).json({ message, token });
+        res.status(200).json({ message, token,userType });
     } catch (error) {
         console.error('Error al iniciar sesión:', error);
         res.status(500).json({ message: 'Error al iniciar sesión' });
