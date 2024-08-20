@@ -46,20 +46,22 @@ app.get('/api/contracts', async (req, res) => {
     }
 });
 
-app.post('/api/crearContrato', async (req,res ) => {
-    const { name, contractAddress, description, owner } = req.body;
-    contrato.CrearContrato(name, description, owner);
+// Ruta para crear y desplegar un contrato
+app.post('/api/crearContrato', async (req, res) => {
+    const { name, description, owner } = req.body;
     try {
-        const newContract=new Contract({name, contractAddress, description, owner})
-            await newContract.save();
-            res.status(201).json(newContract);
+        // Desplegar el contrato
+        await contrato.CrearContrato(name, description, owner);
+        res.status(201).json({ message: 'Contrato desplegado y guardado con éxito' });
     } catch (error) {
-        res.status(500).send('ERROR al guardar el contrato')
+        console.error('Error al desplegar y guardar el contrato:', error);
+        res.status(500).send('Error al desplegar el contrato');
     }
-
 });
 
+
 //GUARDAR CONTRATOS 
+
 app.post('/api/contracts', async (req, res) => {
 
     const { name, contractAddress, description, owner } = req.body;
