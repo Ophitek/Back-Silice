@@ -61,7 +61,7 @@ async function deployContract(name, description, owner) {
 // FUNCION PARA GUARDAR CONTRATOS        
 async function saveContract(name, contractAddress, description, owner) {
     try {
-        const response = await axios.post('http://localhost:8080/api/contracts', {
+        const response = await axios.post('https://back-silice.onrender.com/api/contracts', {
             name,
             contractAddress,
             description,
