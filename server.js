@@ -9,6 +9,7 @@ const PORT = process.env.PORT || 8080;
 const contrato=require("./Contrato2.js")
 const Donador= require("./models/Donador.js")
 const User= require("./models/user.js")
+const {deployContract} = require('./Contrato2.js')
 
 connectDB();
 
