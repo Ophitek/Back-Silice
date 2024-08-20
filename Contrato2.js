@@ -14,11 +14,11 @@ const fs = require('fs');
 
 require('dotenv').config();
 
-async function deployContract(name, description, owner, pass) {
-    console.log("Esto recibe el contrato name: ",name, "owner: ", owner, "Pass ", pass);
+async function deployContract(name, description, publicId, pass,owner) {
+    console.log("Esto recibe el contrato name: ",name, "pID: ", publicId, "Pass ", pass, "owner", owner);
     
     const client = Client.forTestnet();
-    client.setOperator(AccountId.fromString(owner), PrivateKey.fromStringECDSA(pass));
+    client.setOperator(AccountId.fromString(publicId), PrivateKey.fromStringECDSA(pass));
 
     const contractBytecode = fs.readFileSync('v3_sol_DonationTracker.bin');
 
@@ -57,16 +57,17 @@ async function deployContract(name, description, owner, pass) {
     console.log(`Contract deployed with ID: ${contractId}`);
 
     // Guardar el contrato en la base de datos
-    await saveContract(name, contractId.toString(), description, owner);
+    await saveContract(name, contractId.toString(), description, publicId, owner);
 }
 
 // FUNCION PARA GUARDAR CONTRATOS        
-async function saveContract(name, contractAddress, description, owner) {
+async function saveContract(name, contractAddress, description, publicId,owner) {
     try {
         const response = await axios.post('https://back-silice.onrender.com/api/contracts', {
             name,
             contractAddress,
             description,
+            publicId,
             owner
         });
         console.log('Contrato guardado en la base de datos:', response.data);
