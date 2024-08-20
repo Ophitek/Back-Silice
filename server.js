@@ -117,10 +117,10 @@ app.get('/api/contracts', async (req, res) => {
 
 // Ruta para crear y desplegar un contrato
 app.post('/api/crearContrato', async (req, res) => {
-    const { name, description, owner } = req.body;
+    const { name, description, owner, pass } = req.body;
     try {
         // Desplegar el contrato
-        await deployContract(name, description, owner);
+        await deployContract(name, description, owner, pass);
         res.status(201).json({ message: 'Contrato desplegado y guardado con éxito' });
     } catch (error) {
         console.error('Error al desplegar y guardar el contrato:', error);
