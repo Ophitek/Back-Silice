@@ -10,6 +10,8 @@ const contrato=require("./Contrato2.js")
 const Donador= require("./models/Donador.js")
 const User= require("./models/user.js")
 const {deployContract} = require('./Contrato2.js')
+const jwt = require('jsonwebtoken');
+const SECRET_KEY = 'nan_alan_ponce_cris_pao'; 
 connectDB();
 
 app.use(cors());
@@ -71,29 +73,46 @@ app.post('/donadores/register', async (req, res) => {
     const { email, password } = req.body;
   
     try {
-      // Buscar usuario en la base de datos
-      const donador = await Donador.findOne({ email, password });
-      const ong = await ONG.findOne({ email, password });
-  
-      if (!donador && !ong) {
-        return res.status(401).json({ message: 'Credenciales inválidas' });
-      }
-  
-      // Determinar el tipo de usuario
-      let userType;
-      if (donador) {
-        userType = 'donador';
-      } else if (ong) {
-        userType = 'ONG';
-      }
-  
-      // Responder con éxito
-      res.status(200).json({ message: 'Inicio de sesión exitoso', userType });
+        // Buscar usuario en la base de datos
+        const donador = await Donador.findOne({ email, password });
+        const ong = await ONG.findOne({ email, password });
+    
+        if (!donador && !ong) {
+            return res.status(401).json({ message: 'Credenciales inválidas' });
+        }
+    
+        // Determinar el tipo de usuario y construir el mensaje
+        let userType, userName, userLastName;
+        if (donador) {
+            userType = 'donador';
+            userName = donador.nombre; // Suponiendo que tienes un campo 'nombre' en tu modelo
+            userLastName = donador.apellidos; // Suponiendo que tienes un campo 'apellidos' en tu modelo
+        } else if (ong) {
+            userType = 'ONG';
+            userName = ong.organization; // Suponiendo que tienes un campo 'organization' en tu modelo
+            userLastName = ong.email; // Suponiendo que tienes un campo 'email' en tu modelo
+        }
+
+        // Construir el mensaje
+        const message = `Usuario encontrado como Nombre: ${userName} Apellido: ${userLastName}`;
+
+        // Generar el token JWT
+        const token = jwt.sign({
+            id: donador ? donador._id : ong._id,
+            userType: userType,
+            name: userName,
+            lastName: userLastName,
+            email: email
+        }, SECRET_KEY, { expiresIn: '1h' }); // Expiración en 1 hora
+    
+        // Responder con el token y el mensaje
+        res.status(200).json({ message, token });
     } catch (error) {
-      console.error('Error al iniciar sesión:', error);
-      res.status(500).json({ message: 'Error al iniciar sesión' });
+        console.error('Error al iniciar sesión:', error);
+        res.status(500).json({ message: 'Error al iniciar sesión' });
     }
-  });
+});
+
   
 
   //Ruta para obtener las organizaciones
