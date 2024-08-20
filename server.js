@@ -12,6 +12,10 @@ const User= require("./models/user.js")
 const {deployContract} = require('./Contrato2.js')
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = 'nan_alan_ponce_cris_pao'; 
+const { contractBalanceCheckerFcn } = require('./Bcontract.js'); // Ajusta la ruta según corresponda
+
+
+
 connectDB();
 
 app.use(cors());
@@ -115,7 +119,23 @@ app.post('/donadores/register', async (req, res) => {
     }
 });
 
-  
+  //Balance
+app.get('/api/contract/balance/:contractId', async (req, res) => {
+    const { contractId } = req.params;
+    try {
+        // Llamar a la función para obtener el balance
+        const [fromCallQuery, fromInfoQuery] = await contractBalanceCheckerFcn(contractId);
+        
+        // Enviar el resultado como respuesta
+        res.status(200).json({
+            balanceFromFunction: fromCallQuery,
+            balanceFromQuery: fromInfoQuery.balance.toString(),
+        });
+    } catch (error) {
+        console.error('Error al obtener el balance del contrato:', error);
+        res.status(500).send('Error al obtener el balance del contrato');
+    }
+});
 
   //Ruta para obtener las organizaciones
 app.get('/api/organizations', async (req, res) => {
@@ -127,14 +147,26 @@ app.get('/api/organizations', async (req, res) => {
     }
 });
     //Ruta para obtener los contratos
-app.get('/api/contracts', async (req, res) => {
-    try {
-        const contracts = await Contract.find(); // Obtiene todos los contratos de la base de datos
-        res.json(contracts); // Devuelve los contratos en formato JSON
-    } catch (error) {
-        res.status(500).send('Error al obtener los contratos');
-    }
-});
+    app.get('/api/contracts', async (req, res) => {
+        try {
+            const contracts = await Contract.find(); // Obtiene todos los contratos de la base de datos
+    
+            const contractsWithBalance = await Promise.all(
+                contracts.map(async (contract) => {
+                    const [fromCallQuery, fromInfoQuery] = await contractBalanceCheckerFcn(contract.contractAddress);
+                    return {
+                        ...contract._doc, // Los datos originales del contrato
+                        balance: fromInfoQuery.balance.toString() // Agrega el balance al objeto de contrato
+                    };
+                })
+            );
+    
+            res.json(contractsWithBalance); // Devuelve los contratos con el balance en formato JSON
+        } catch (error) {
+            res.status(500).send('Error al obtener los contratos');
+        }
+    });
+    
 
 // Ruta para crear y desplegar un contrato
 app.post('/api/crearContrato', async (req, res) => {
