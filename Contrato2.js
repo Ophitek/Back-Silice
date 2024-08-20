@@ -14,14 +14,16 @@ const fs = require('fs');
 
 require('dotenv').config();
 
-async function deployContract(name, description, owner) {
+async function deployContract(name, description, owner, pass) {
+    console.log("Esto recibe el contrato name: ",name, "owner: ", owner, "Pass ", pass);
+    
     const client = Client.forTestnet();
-    client.setOperator(AccountId.fromString(process.env.MY_ACCOUNT_ID), PrivateKey.fromStringECDSA(process.env.MY_PRIVATE_KEY));
+    client.setOperator(AccountId.fromString(owner), PrivateKey.fromStringECDSA(pass));
 
     const contractBytecode = fs.readFileSync('v3_sol_DonationTracker.bin');
 
     const fileCreateTx = await new FileCreateTransaction()
-        .setKeys([PrivateKey.fromStringECDSA(process.env.MY_PRIVATE_KEY)]) 
+        .setKeys([PrivateKey.fromStringECDSA(pass)]) 
         .setContents(contractBytecode.slice(0, 5000)) 
         .setMaxTransactionFee(new Hbar(2))
         .execute(client);
